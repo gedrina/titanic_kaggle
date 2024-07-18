@@ -111,20 +111,24 @@ for name, (model, params) in models.items():
     grid_search.fit(X_train_scaled, y_train)
     
     best_models[name] = grid_search.best_estimator_
+    train_accuracy = accuracy_score(y_train, grid_search.predict(X_train_scaled))
+    val_accuracy = accuracy_score(y_val, grid_search.predict(X_val_scaled))
+    
     results[name] = {
         'Best Parameters': grid_search.best_params_,
         'Cross-validation Score': grid_search.best_score_,
-        'Validation Accuracy': accuracy_score(y_val, grid_search.predict(X_val_scaled))
+        'Training Accuracy': train_accuracy,
+        'Validation Accuracy': val_accuracy
     }
     print(f"{name}:")
     print(f"Best parameters: {results[name]['Best Parameters']}")
     print(f"Cross-validation Score: {results[name]['Cross-validation Score']:.4f}")
+    print(f"Training Accuracy: {results[name]['Training Accuracy']:.4f}")
     print(f"Validation Accuracy: {results[name]['Validation Accuracy']:.4f}")
     #print(classification_report(y_val, grid_search.predict(X_val_scaled)))
-    
 
 # Create a table with scores
-scores_df = pd.DataFrame({name: {'Validation Accuracy': result['Validation Accuracy']} for name, result in results.items()}).T
+scores_df = pd.DataFrame({name: {'Training Accuracy': result['Training Accuracy'], 'Validation Accuracy': result['Validation Accuracy']} for name, result in results.items()}).T
 scores_df = scores_df.sort_values('Validation Accuracy', ascending=False)
 print("Model Performance Table:")
 print(scores_df)
